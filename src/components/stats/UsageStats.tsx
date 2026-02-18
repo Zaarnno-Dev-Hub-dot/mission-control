@@ -47,8 +47,8 @@ export function UsageStats() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-32">
-        <div className="flex items-center gap-2 text-gray-400">
-          <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-500 rounded-full animate-spin" />
+        <div className="flex items-center gap-2 text-gray-500">
+          <div className="w-4 h-4 border-2 border-gray-600 border-t-gray-400 rounded-full animate-spin" />
           <span className="text-sm">Loading stats...</span>
         </div>
       </div>
@@ -63,7 +63,7 @@ export function UsageStats() {
           <StatCard label="Today's Tokens" value="--" />
           <StatCard label="Est. Cost" value="--" />
         </div>
-        <p className="text-gray-400 text-sm text-center py-4">
+        <p className="text-gray-500 text-sm text-center py-4">
           No usage data yet. Stats will appear here once sessions are tracked.
         </p>
       </div>
@@ -92,7 +92,7 @@ export function UsageStats() {
       </div>
 
       {/* 7-Day Chart */}
-      <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+      <div className="bg-[#0a0a0f] rounded-xl p-4 border border-gray-800">
         <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
           Last 7 Days
         </h4>
@@ -102,13 +102,13 @@ export function UsageStats() {
               <span className="text-xs text-gray-500 w-12">
                 {new Date(date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
               </span>
-              <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div className="flex-1 h-2 bg-gray-800 rounded-full overflow-hidden">
                 <div 
                   className="h-full bg-emerald-500 rounded-full transition-all"
                   style={{ width: `${(stats.calls / maxCalls) * 100}%` }}
                 />
               </div>
-              <span className="text-xs text-gray-600 w-10 text-right">
+              <span className="text-xs text-gray-400 w-10 text-right">
                 {stats.calls}
               </span>
             </div>
@@ -117,7 +117,7 @@ export function UsageStats() {
       </div>
 
       {/* Totals */}
-      <div className="flex justify-between text-xs text-gray-400 pt-2">
+      <div className="flex justify-between text-xs text-gray-600 pt-2">
         <span>Total: {formatNumber(data.totalEntries)} sessions</span>
         <span>Updated {new Date(data.lastUpdated).toLocaleTimeString()}</span>
       </div>
@@ -137,10 +137,10 @@ function StatCard({
   return (
     <div className={`rounded-xl p-3 text-center border ${
       accent 
-        ? "bg-emerald-50 border-emerald-100" 
-        : "bg-gray-50 border-gray-100"
+        ? "bg-emerald-500/10 border-emerald-500/20" 
+        : "bg-gray-800/50 border-gray-700"
     }`}>
-      <div className={`text-lg font-bold ${accent ? "text-emerald-600" : "text-gray-700"}`}>
+      <div className={`text-lg font-bold ${accent ? "text-emerald-400" : "text-gray-200"}`}>
         {value}
       </div>
       <div className="text-[10px] text-gray-500 uppercase tracking-wide mt-0.5">{label}</div>

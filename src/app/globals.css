@@ -1,6 +1,6 @@
 :root {
-  --background: #f9fafb;
-  --foreground: #111827;
+  --background: #0a0a0f;
+  --foreground: #f3f4f6;
 }
 
 html {
@@ -14,21 +14,21 @@ body {
   font-feature-settings: "rlig" 1, "calt" 1;
 }
 
-/* Custom scrollbar for clean theme */
+/* Custom scrollbar for dark theme */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: #12121a;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #d1d5db;
+  background: #374151;
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #9ca3af;
+  background: #4b5563;
 }
