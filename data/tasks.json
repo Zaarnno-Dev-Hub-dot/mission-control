@@ -23,7 +23,7 @@
     "desc": "Overview | Kanban toggle",
     "assignee": "red",
     "date": "2026-02-19",
-    "column": "to-do",
+    "column": "dragon-backlog",
     "progress": 0
   },
   {
@@ -41,7 +41,14 @@
     "desc": "5 cols + edit modal",
     "assignee": "red",
     "date": "2026-02-19",
+    "column": "to-do",
+    "progress": 0
+  },
+  {
+    "id": "task-1771442686100",
+    "title": "New Task",
     "column": "dragon-backlog",
+    "date": "2026-02-18",
     "progress": 0
   }
 ]
