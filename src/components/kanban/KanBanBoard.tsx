@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import {
   DndContext,
   DragEndEvent,
@@ -13,11 +13,14 @@ import {
 import { arrayMove } from "@dnd-kit/sortable";
 import { KanBanColumn } from "./KanBanColumn";
 import { KanBanCard } from "./KanBanCard";
+import { TaskModal } from "./TaskModal";
 import type { Task, Column, BoardData } from "@/types/kanban";
 
 export function KanBanBoard() {
   const [boardData, setBoardData] = useState<BoardData | null>(null);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [saveStatus, setSaveStatus] = useState<"saved" | "saving" | "error">("saved");
 
@@ -31,7 +34,7 @@ export function KanBanBoard() {
     if (boardData && !isLoading) {
       const timeout = setTimeout(() => {
         saveBoard();
-      }, 500); // Debounce 500ms
+      }, 500);
       return () => clearTimeout(timeout);
     }
   }, [boardData, isLoading]);
@@ -146,28 +149,9 @@ export function KanBanBoard() {
   };
 
   const handleAddTask = (columnId: string) => {
-    const title = prompt("Task title:");
-    if (!title || !boardData) return;
-
-    const assigneeInput = prompt("Assign to: (red/blue/user/zaarno)");
-    const assigneeMap: Record<string, "red" | "blue" | "user" | "zaarno"> = {
-      red: "red",
-      blue: "blue",
-      user: "user",
-      zaarno: "zaarno",
-    };
-    const assignee = assigneeMap[assigneeInput?.toLowerCase() || ""];
-
-    const priorityInput = prompt("Priority: (low/medium/high)");
-    const priority = ["low", "medium", "high"].includes(priorityInput?.toLowerCase() || "")
-      ? (priorityInput?.toLowerCase() as "low" | "medium" | "high")
-      : undefined;
-
     const newTask: Task = {
       id: `task-${Date.now()}`,
-      title,
-      assignee,
-      priority,
+      title: "New Task",
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -182,25 +166,90 @@ export function KanBanBoard() {
         lastUpdated: new Date().toISOString(),
       };
     });
+
+    // Open modal for the new task
+    setSelectedTask(newTask);
+    setIsModalOpen(true);
+  };
+
+  const handleEditTask = (task: Task) => {
+    setSelectedTask(task);
+    setIsModalOpen(true);
+  };
+
+  const handleSaveTask = (updatedTask: Task) => {
+    setBoardData((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        columns: prev.columns.map((col) => ({
+          ...col,
+          tasks: col.tasks.map((t) => (t.id === updatedTask.id ? updatedTask : t)),
+        })),
+        lastUpdated: new Date().toISOString(),
+      };
+    });
+  };
+
+  const handleDeleteTask = (taskId: string) => {
+    setBoardData((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        columns: prev.columns.map((col) => ({
+          ...col,
+          tasks: col.tasks.filter((t) => t.id !== taskId),
+        })),
+        lastUpdated: new Date().toISOString(),
+      };
+    });
   };
 
   if (isLoading || !boardData) {
     return (
-      <div className="flex items-center justify-center h-64 text-dragon-500">
-        <div className="animate-pulse">Loading KanBan board...</div>
+      <div className="flex items-center justify-center h-64">
+        <div className="flex items-center gap-3 text-dragon-400">
+          <div className="w-5 h-5 border-2 border-dragon-400 border-t-transparent rounded-full animate-spin" />
+          <span className="text-sm font-medium">Loading board...</span>
+        </div>
       </div>
     );
   }
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-4">
-        <span className="text-xs text-dragon-500">
-          {saveStatus === "saving" && "💾 Saving..."}
-          {saveStatus === "saved" && `✅ Saved · ${new Date(boardData.lastUpdated).toLocaleTimeString()}`}
-          {saveStatus === "error" && "❌ Save failed"}
+      {/* Status Bar */}
+      <div className="flex items-center justify-between mb-4 px-1">
+        <span className="text-xs font-medium">
+          {saveStatus === "saving" && (
+            <span className="flex items-center gap-1.5 text-amber-400">
+              <span className="w-3 h-3 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
+              Saving...
+            </span>
+          )}
+          {saveStatus === "saved" && (
+            <span className="flex items-center gap-1.5 text-emerald-400">
+              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+              </svg>
+              Saved
+            </span>
+          )}
+          {saveStatus === "error" && (
+            <span className="flex items-center gap-1.5 text-red-400">
+              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+              </svg>
+              Save failed
+            </span>
+          )}
+        </span>
+        <span className="text-xs text-dragon-600">
+          {boardData.columns.reduce((acc, col) => acc + col.tasks.length, 0)} tasks
         </span>
       </div>
+
+      {/* Board */}
       <DndContext
         sensors={sensors}
         onDragStart={handleDragStart}
@@ -212,6 +261,7 @@ export function KanBanBoard() {
               key={column.id}
               column={column}
               onAddTask={() => handleAddTask(column.id)}
+              onEditTask={handleEditTask}
             />
           ))}
         </div>
@@ -219,6 +269,18 @@ export function KanBanBoard() {
           {activeTask ? <KanBanCard task={activeTask} isDragging /> : null}
         </DragOverlay>
       </DndContext>
+
+      {/* Task Modal */}
+      <TaskModal
+        task={selectedTask}
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedTask(null);
+        }}
+        onSave={handleSaveTask}
+        onDelete={handleDeleteTask}
+      />
     </div>
   );
 }

@@ -7,9 +7,10 @@ import type { Task } from "@/types/kanban";
 interface KanBanCardProps {
   task: Task;
   isDragging?: boolean;
+  onClick?: () => void;
 }
 
-export function KanBanCard({ task, isDragging }: KanBanCardProps) {
+export function KanBanCard({ task, isDragging, onClick }: KanBanCardProps) {
   const {
     attributes,
     listeners,
@@ -31,11 +32,13 @@ export function KanBanCard({ task, isDragging }: KanBanCardProps) {
     zaarno: "🧙",
   };
 
-  const priorityColor = {
-    low: "bg-dragon-600 text-dragon-200",
-    medium: "bg-dragon-400 text-dragon-900",
-    high: "bg-red-500 text-white",
+  const priorityConfig = {
+    low: { color: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30", label: "Low" },
+    medium: { color: "bg-amber-500/20 text-amber-400 border-amber-500/30", label: "Medium" },
+    high: { color: "bg-red-500/20 text-red-400 border-red-500/30", label: "High" },
   };
+
+  const priority = task.priority ? priorityConfig[task.priority] : null;
 
   return (
     <div
@@ -43,45 +46,71 @@ export function KanBanCard({ task, isDragging }: KanBanCardProps) {
       style={style}
       {...attributes}
       {...listeners}
-      className={`kanban-card bg-dragon-800 p-3 rounded border border-dragon-600 ${
-        isDragging || isSortableDragging
-          ? "opacity-50 rotate-2 scale-105 shadow-xl"
-          : ""
-      }`}
+      onClick={onClick}
+      className={`
+        group relative bg-dragon-800/80 hover:bg-dragon-800 
+        p-4 rounded-xl border border-dragon-700/50 hover:border-dragon-600
+        shadow-sm hover:shadow-lg hover:shadow-dragon-900/50
+        transition-all duration-200 ease-out
+        cursor-grab active:cursor-grabbing
+        ${isDragging || isSortableDragging ? "opacity-50 rotate-2 scale-105 shadow-xl ring-2 ring-dragon-400/50" : ""}
+      `}
     >
-      <div className="flex items-start justify-between gap-2">
-        <h4 className="text-sm font-medium text-dragon-100 flex-1">
-          {task.title}
-        </h4>
-        {task.assignee && (
-          <span className="text-xs">{assigneeEmoji[task.assignee]}</span>
-        )}
-      </div>
+      {/* Priority Badge */}
+      {priority && (
+        <div className={`absolute -top-1.5 -right-1.5 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full border ${priority.color}`}>
+          {priority.label}
+        </div>
+      )}
 
+      {/* Title */}
+      <h4 className="text-sm font-semibold text-dragon-100 leading-snug pr-4">
+        {task.title}
+      </h4>
+
+      {/* Description Preview */}
       {task.description && (
-        <p className="text-xs text-dragon-500 mt-1 line-clamp-2">
+        <p className="text-xs text-dragon-500 mt-2 line-clamp-2 leading-relaxed">
           {task.description}
         </p>
       )}
 
-      <div className="flex items-center gap-2 mt-2">
-        {task.priority && (
-          <span
-            className={`text-[10px] px-1.5 py-0.5 rounded ${
-              priorityColor[task.priority]
-            }`}
-          >
-            {task.priority}
-          </span>
+      {/* Footer Row */}
+      <div className="flex items-center justify-between mt-3 pt-3 border-t border-dragon-700/30">
+        {/* Assignee */}
+        <div className="flex items-center gap-1.5">
+          {task.assignee ? (
+            <span className="text-sm" title={`Assigned to ${task.assignee}`}>
+              {assigneeEmoji[task.assignee]}
+            </span>
+          ) : (
+            <span className="text-xs text-dragon-600">Unassigned</span>
+          )}
+        </div>
+
+        {/* Tags */}
+        {task.tags && task.tags.length > 0 && (
+          <div className="flex items-center gap-1 flex-wrap justify-end">
+            {task.tags.slice(0, 2).map((tag) => (
+              <span
+                key={tag}
+                className="text-[10px] px-1.5 py-0.5 rounded bg-dragon-700/50 text-dragon-400 border border-dragon-600/30"
+              >
+                #{tag}
+              </span>
+            ))}
+            {task.tags.length > 2 && (
+              <span className="text-[10px] text-dragon-500">+{task.tags.length - 2}</span>
+            )}
+          </div>
         )}
-        {task.tags?.map((tag) => (
-          <span
-            key={tag}
-            className="text-[10px] px-1.5 py-0.5 rounded bg-dragon-700 text-dragon-400"
-          >
-            #{tag}
-          </span>
-        ))}
+      </div>
+
+      {/* Edit Hint */}
+      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-dragon-900/60 rounded-xl pointer-events-none">
+        <span className="px-3 py-1.5 bg-dragon-700 text-dragon-200 text-xs font-medium rounded-lg shadow-lg">
+          Click to edit
+        </span>
       </div>
     </div>
   );
