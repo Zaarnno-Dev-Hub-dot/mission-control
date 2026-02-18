@@ -14,59 +14,72 @@ interface KanBanColumnProps {
   onEditTask: (task: Task) => void;
 }
 
-const columnColors: Record<string, string> = {
-  backlog: "border-dragon-700/50",
-  priority: "border-amber-500/30",
-  active: "border-dragon-400/30",
-  done: "border-emerald-500/30",
-};
-
-const columnHeaderColors: Record<string, string> = {
-  backlog: "text-dragon-400",
-  priority: "text-amber-400",
-  active: "text-dragon-300",
-  done: "text-emerald-400",
+const columnStyles: Record<string, { bg: string; border: string; header: string }> = {
+  backlog: { 
+    bg: "bg-gray-50/50", 
+    border: "border-gray-200", 
+    header: "text-gray-700" 
+  },
+  priority: { 
+    bg: "bg-amber-50/50", 
+    border: "border-amber-200", 
+    header: "text-amber-700" 
+  },
+  active: { 
+    bg: "bg-blue-50/50", 
+    border: "border-blue-200", 
+    header: "text-blue-700" 
+  },
+  done: { 
+    bg: "bg-green-50/50", 
+    border: "border-green-200", 
+    header: "text-green-700" 
+  },
 };
 
 export function KanBanColumn({ column, onAddTask, onEditTask }: KanBanColumnProps) {
-  const { setNodeRef, isOver } = useDroppable({
-    id: column.id,
-  });
-
-  const borderColor = columnColors[column.id] || "border-dragon-700";
-  const headerColor = columnHeaderColors[column.id] || "text-dragon-300";
+  const { setNodeRef, isOver } = useDroppable({ id: column.id });
+  
+  const style = columnStyles[column.id] || columnStyles.backlog;
 
   return (
     <div
       ref={setNodeRef}
       className={`
-        flex flex-col bg-dragon-900/50 rounded-xl border-2 min-h-[400px]
+        flex flex-col rounded-2xl border-2 min-h-[500px] max-h-[calc(100vh-200px)]
         transition-all duration-200
-        ${isOver ? "border-dragon-400 bg-dragon-800/50 scale-[1.02]" : borderColor}
+        ${style.bg} ${style.border}
+        ${isOver ? "ring-2 ring-blue-500/50 scale-[1.01]" : ""}
       `}
     >
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-dragon-700/50">
+      <div className="flex items-center justify-between p-4 border-b border-gray-100/50">
         <div className="flex items-center gap-2">
-          <h3 className={`font-bold ${headerColor}`}>{column.title}</h3>
-          <span className="text-xs font-medium text-dragon-600 bg-dragon-800/80 px-2.5 py-0.5 rounded-full">
+          <h3 className={`font-bold text-sm ${style.header}`}>
+            {column.title}
+          </h3>
+          <span className="text-xs font-semibold text-gray-400 bg-white/80 px-2 py-0.5 rounded-full border border-gray-100">
             {column.tasks.length}
           </span>
         </div>
       </div>
 
       {/* Task List */}
-      <div className="flex-1 p-3">
+      <div className="flex-1 p-3 overflow-y-auto">
         <SortableContext
           items={column.tasks.map((t) => t.id)}
           strategy={verticalListSortingStrategy}
         >
           <div className="space-y-3">
             {column.tasks.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-8 text-center">
-                <span className="text-2xl mb-2">📝</span>
-                <p className="text-xs text-dragon-600">No tasks yet</p>
-                <p className="text-[10px] text-dragon-700 mt-1">Drag tasks here</p>
+              <div className="flex flex-col items-center justify-center py-12 text-center">
+                <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mb-3">
+                  <svg className="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  </svg>
+                </div>
+                <p className="text-xs text-gray-400 font-medium">No tasks</p>
+                <p className="text-[10px] text-gray-300 mt-0.5">Add a task to get started</p>
               </div>
             ) : (
               column.tasks.map((task) => (
@@ -82,16 +95,15 @@ export function KanBanColumn({ column, onAddTask, onEditTask }: KanBanColumnProp
       </div>
 
       {/* Add Button */}
-      <div className="p-3 border-t border-dragon-700/50">
+      <div className="p-3">
         <button
           onClick={onAddTask}
           className="
             w-full py-3 px-4
             flex items-center justify-center gap-2
-            text-sm font-medium text-dragon-500
-            hover:text-dragon-200 hover:bg-dragon-700/50
-            rounded-lg border border-dashed border-dragon-600
-            hover:border-dragon-400 hover:shadow-lg hover:shadow-dragon-400/10
+            bg-white hover:bg-gray-50
+            text-sm font-medium text-gray-600 hover:text-gray-800
+            rounded-xl border border-dashed border-gray-300 hover:border-gray-400
             transition-all duration-200
             active:scale-[0.98]
           "

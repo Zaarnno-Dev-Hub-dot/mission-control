@@ -5,6 +5,7 @@ export interface Task {
   assignee?: "red" | "blue" | "user" | "zaarno";
   priority?: "low" | "medium" | "high";
   tags?: string[];
+  dueDate?: string;
   createdAt: string;
   updatedAt: string;
 }

@@ -29,13 +29,38 @@
           ],
           "createdAt": "2026-02-18T13:08:00.000Z",
           "updatedAt": "2026-02-18T13:08:00.000Z"
+        },
+        {
+          "id": "task-1771423268778",
+          "title": "New Task",
+          "createdAt": "2026-02-18T14:01:08.778Z",
+          "updatedAt": "2026-02-18T14:01:08.779Z"
+        },
+        {
+          "id": "task-1771423272896",
+          "title": "New Task",
+          "createdAt": "2026-02-18T14:01:12.896Z",
+          "updatedAt": "2026-02-18T14:01:12.896Z"
         }
       ]
     },
     {
       "id": "priority",
       "title": "🎯 Priority",
-      "tasks": []
+      "tasks": [
+        {
+          "id": "task-1771423047488",
+          "title": "New Task",
+          "createdAt": "2026-02-18T13:57:27.488Z",
+          "updatedAt": "2026-02-18T13:57:27.488Z"
+        },
+        {
+          "id": "task-1771423048810",
+          "title": "New Task",
+          "createdAt": "2026-02-18T13:57:28.810Z",
+          "updatedAt": "2026-02-18T13:57:28.810Z"
+        }
+      ]
     },
     {
       "id": "active",
@@ -75,6 +100,18 @@
           "assignee": "zaarno",
           "createdAt": "2026-02-18T13:06:49.827Z",
           "updatedAt": "2026-02-18T13:06:49.827Z"
+        },
+        {
+          "id": "task-1771423042494",
+          "title": "New Task",
+          "createdAt": "2026-02-18T13:57:22.494Z",
+          "updatedAt": "2026-02-18T13:57:22.494Z"
+        },
+        {
+          "id": "task-1771423044158",
+          "title": "New Task",
+          "createdAt": "2026-02-18T13:57:24.158Z",
+          "updatedAt": "2026-02-18T13:57:24.158Z"
         }
       ]
     },
@@ -88,9 +125,15 @@
           "priority": "low",
           "createdAt": "2026-02-18T11:21:59.911Z",
           "updatedAt": "2026-02-18T11:21:59.911Z"
+        },
+        {
+          "id": "task-1771423034358",
+          "title": "New Task",
+          "createdAt": "2026-02-18T13:57:14.358Z",
+          "updatedAt": "2026-02-18T13:57:14.358Z"
         }
       ]
     }
   ],
-  "lastUpdated": "2026-02-18T13:06:49.829Z"
+  "lastUpdated": "2026-02-18T14:01:12.896Z"
 }

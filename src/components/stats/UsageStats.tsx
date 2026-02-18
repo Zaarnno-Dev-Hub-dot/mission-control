@@ -23,7 +23,7 @@ export function UsageStats() {
 
   useEffect(() => {
     fetchUsage();
-    const interval = setInterval(fetchUsage, 30000); // Refresh every 30s
+    const interval = setInterval(fetchUsage, 30000);
     return () => clearInterval(interval);
   }, []);
 
@@ -46,8 +46,11 @@ export function UsageStats() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-48 text-dragon-500">
-        <div className="animate-pulse">Loading stats...</div>
+      <div className="flex items-center justify-center h-32">
+        <div className="flex items-center gap-2 text-gray-400">
+          <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-500 rounded-full animate-spin" />
+          <span className="text-sm">Loading stats...</span>
+        </div>
       </div>
     );
   }
@@ -55,60 +58,58 @@ export function UsageStats() {
   if (!data || data.totalEntries === 0) {
     return (
       <div className="space-y-4">
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-3 gap-3">
           <StatCard label="Today's Calls" value="--" />
           <StatCard label="Today's Tokens" value="--" />
           <StatCard label="Est. Cost" value="--" />
         </div>
-        <p className="text-dragon-500 text-sm text-center">
+        <p className="text-gray-400 text-sm text-center py-4">
           No usage data yet. Stats will appear here once sessions are tracked.
         </p>
       </div>
     );
   }
 
+  const maxCalls = Math.max(...(data.last7Days?.map(([, s]) => s.calls) || [1]), 1);
+
   return (
     <div className="space-y-4">
       {/* Today's Stats */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-3">
         <StatCard 
-          label="Today's Calls" 
+          label="Calls" 
           value={formatNumber(data.today?.calls || 0)} 
-          color="text-dragon-300"
         />
         <StatCard 
-          label="Today's Tokens" 
+          label="Tokens" 
           value={formatNumber(data.today?.tokens || 0)} 
-          color="text-dragon-300"
         />
         <StatCard 
-          label="Est. Cost" 
+          label="Cost" 
           value={formatCost(data.today?.cost || 0)} 
-          color="text-dragon-400"
+          accent
         />
       </div>
 
       {/* 7-Day Chart */}
-      <div className="bg-dragon-900 rounded p-3 border border-dragon-700">
-        <h4 className="text-xs text-dragon-500 uppercase tracking-wider mb-3">
+      <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+        <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
           Last 7 Days
         </h4>
         <div className="space-y-2">
           {data.last7Days?.map(([date, stats]) => (
             <div key={date} className="flex items-center gap-3">
-              <span className="text-xs text-dragon-500 w-16">
+              <span className="text-xs text-gray-500 w-12">
                 {new Date(date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
               </span>
-              <div className="flex-1 h-4 bg-dragon-800 rounded overflow-hidden">
+              <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
                 <div 
-                  className="h-full bg-dragon-400 rounded"
-                  style={{ 
-                    width: `${Math.min(100, (stats.calls / Math.max(...data.last7Days.map(([, s]) => s.calls))) * 100)}%` 
-                  }}
+                  className="h-full bg-emerald-500 rounded-full transition-all"
+                  style={{ width: `${(stats.calls / maxCalls) * 100}%` }}
                 />
               </div>
-              <span className="text-xs text-dragon-400 w-12 text-right">
-                {stats.calls} calls
+              <span className="text-xs text-gray-600 w-10 text-right">
+                {stats.calls}
               </span>
             </div>
           ))}
@@ -116,11 +117,9 @@ export function UsageStats() {
       </div>
 
       {/* Totals */}
-      <div className="flex justify-between text-xs text-dragon-500 pt-2 border-t border-dragon-700">
-        <span>Total Sessions: {formatNumber(data.totalEntries)}</span>
-        <span>
-          Updated: {new Date(data.lastUpdated).toLocaleTimeString()}
-        </span>
+      <div className="flex justify-between text-xs text-gray-400 pt-2">
+        <span>Total: {formatNumber(data.totalEntries)} sessions</span>
+        <span>Updated {new Date(data.lastUpdated).toLocaleTimeString()}</span>
       </div>
     </div>
   );
@@ -129,16 +128,22 @@ export function UsageStats() {
 function StatCard({ 
   label, 
   value, 
-  color = "text-dragon-200" 
+  accent = false
 }: { 
   label: string; 
-  value: string; 
-  color?: string;
+  value: string;
+  accent?: boolean;
 }) {
   return (
-    <div className="bg-dragon-900 rounded p-3 border border-dragon-700 text-center">
-      <div className={`text-xl font-bold ${color}`}>{value}</div>
-      <div className="text-xs text-dragon-500 mt-1">{label}</div>
+    <div className={`rounded-xl p-3 text-center border ${
+      accent 
+        ? "bg-emerald-50 border-emerald-100" 
+        : "bg-gray-50 border-gray-100"
+    }`}>
+      <div className={`text-lg font-bold ${accent ? "text-emerald-600" : "text-gray-700"}`}>
+        {value}
+      </div>
+      <div className="text-[10px] text-gray-500 uppercase tracking-wide mt-0.5">{label}</div>
     </div>
   );
 }
