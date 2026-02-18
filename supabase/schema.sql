@@ -5,10 +5,10 @@
 CREATE TABLE IF NOT EXISTS tasks (
   id TEXT PRIMARY KEY,
   title TEXT NOT NULL,
-  desc TEXT,
+  "desc" TEXT,
   assignee TEXT,
   date DATE,
-  column TEXT NOT NULL DEFAULT 'dragon-backlog',
+  "column" TEXT NOT NULL DEFAULT 'dragon-backlog',
   progress INTEGER DEFAULT 0,
   priority TEXT,
   tags TEXT[],
@@ -44,7 +44,7 @@ INSERT INTO system_stats (id, health) VALUES (1, 99.9)
 ON CONFLICT (id) DO NOTHING;
 
 -- Insert sample tasks
-INSERT INTO tasks (id, title, desc, assignee, date, column, progress, priority, tags) VALUES
+INSERT INTO tasks (id, title, "desc", assignee, date, "column", progress, priority, tags) VALUES
   ('task-1', 'Scaffold Next.js MC', 'App/TS/Tailwind dnd-kit', 'red', '2026-02-18', 'deployed', 100, 'high', ARRAY['mvp']),
   ('task-2', 'UI Review & Plan', 'Match dragon mockup', 'blue', '2026-02-18', 'review', 100, 'high', ARRAY['design']),
   ('task-3', 'NavBar tabs', 'Overview | Kanban toggle', 'red', '2026-02-19', 'to-do', 0, 'medium', ARRAY['ui']),
