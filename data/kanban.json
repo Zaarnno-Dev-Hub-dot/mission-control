@@ -1,0 +1,96 @@
+{
+  "columns": [
+    {
+      "id": "backlog",
+      "title": "📥 Backlog",
+      "tasks": [
+        {
+          "id": "task-1",
+          "title": "Set up NextAuth authentication",
+          "assignee": "red",
+          "priority": "high",
+          "tags": [
+            "auth",
+            "mvp"
+          ],
+          "createdAt": "2026-02-17T22:40:49.876Z",
+          "updatedAt": "2026-02-17T22:40:49.876Z"
+        },
+        {
+          "id": "task-chat-relay",
+          "title": "Revisit Chat Relay feature",
+          "description": "Revisit in channel #1470179669113442506",
+          "assignee": "blue",
+          "priority": "low",
+          "tags": [
+            "chat",
+            "bridge",
+            "parked"
+          ],
+          "createdAt": "2026-02-18T13:08:00.000Z",
+          "updatedAt": "2026-02-18T13:08:00.000Z"
+        }
+      ]
+    },
+    {
+      "id": "priority",
+      "title": "🎯 Priority",
+      "tasks": []
+    },
+    {
+      "id": "active",
+      "title": "⚡ Active",
+      "tasks": [
+        {
+          "id": "task-2",
+          "title": "Build KanBan board UI",
+          "assignee": "red",
+          "priority": "high",
+          "tags": [
+            "ui",
+            "mvp"
+          ],
+          "createdAt": "2026-02-17T22:40:49.876Z",
+          "updatedAt": "2026-02-17T22:40:49.876Z"
+        },
+        {
+          "id": "task-1771384211650",
+          "title": "Trst task security ",
+          "assignee": "zaarno",
+          "priority": "medium",
+          "createdAt": "2026-02-18T03:10:11.650Z",
+          "updatedAt": "2026-02-18T03:10:11.650Z"
+        },
+        {
+          "id": "task-1771413668853",
+          "title": "Teat 2.0",
+          "assignee": "blue",
+          "priority": "high",
+          "createdAt": "2026-02-18T11:21:08.853Z",
+          "updatedAt": "2026-02-18T11:21:08.853Z"
+        },
+        {
+          "id": "task-1771420009827",
+          "title": "Test 4.0",
+          "assignee": "zaarno",
+          "createdAt": "2026-02-18T13:06:49.827Z",
+          "updatedAt": "2026-02-18T13:06:49.827Z"
+        }
+      ]
+    },
+    {
+      "id": "done",
+      "title": "✅ Done",
+      "tasks": [
+        {
+          "id": "task-1771413719911",
+          "title": "Test 3",
+          "priority": "low",
+          "createdAt": "2026-02-18T11:21:59.911Z",
+          "updatedAt": "2026-02-18T11:21:59.911Z"
+        }
+      ]
+    }
+  ],
+  "lastUpdated": "2026-02-18T13:06:49.829Z"
+}
