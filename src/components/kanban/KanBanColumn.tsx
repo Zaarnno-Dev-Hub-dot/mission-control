@@ -14,26 +14,26 @@ interface KanBanColumnProps {
   onEditTask: (task: Task) => void;
 }
 
-const columnStyles: Record<string, { bg: string; border: string; header: string }> = {
+const columnStyles: Record<string, { border: string; header: string; glow: string }> = {
   backlog: { 
-    bg: "bg-[#12121a]/50", 
-    border: "border-gray-800", 
-    header: "text-gray-300" 
+    border: "border-white/10", 
+    header: "text-gray-300",
+    glow: "hover:shadow-lg hover:shadow-white/5",
   },
   priority: { 
-    bg: "bg-amber-950/30", 
-    border: "border-amber-900/50", 
-    header: "text-amber-400" 
+    border: "border-amber-500/20", 
+    header: "text-amber-400",
+    glow: "hover:shadow-lg hover:shadow-amber-500/10",
   },
   active: { 
-    bg: "bg-blue-950/30", 
-    border: "border-blue-900/50", 
-    header: "text-blue-400" 
+    border: "border-blue-500/20", 
+    header: "text-blue-400",
+    glow: "hover:shadow-lg hover:shadow-blue-500/10",
   },
   done: { 
-    bg: "bg-emerald-950/30", 
-    border: "border-emerald-900/50", 
-    header: "text-emerald-400" 
+    border: "border-emerald-500/20", 
+    header: "text-emerald-400",
+    glow: "hover:shadow-lg hover:shadow-emerald-500/10",
   },
 };
 
@@ -46,19 +46,22 @@ export function KanBanColumn({ column, onAddTask, onEditTask }: KanBanColumnProp
     <div
       ref={setNodeRef}
       className={`
-        flex flex-col rounded-2xl border-2 min-h-[500px] max-h-[calc(100vh-200px)]
-        transition-all duration-200
-        ${style.bg} ${style.border}
-        ${isOver ? "ring-2 ring-blue-500/50 scale-[1.01]" : ""}
+        flex flex-col rounded-2xl border min-h-[500px] max-h-[calc(100vh-200px)]
+        backdrop-blur-sm transition-all duration-500
+        ${style.border} ${style.glow}
+        ${isOver ? "ring-2 ring-orange-500/50 scale-[1.01]" : ""}
       `}
+      style={{
+        background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%)',
+      }}
     >
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-800">
+      <div className="flex items-center justify-between p-4 border-b border-white/5">
         <div className="flex items-center gap-2">
           <h3 className={`font-bold text-sm ${style.header}`}>
             {column.title}
           </h3>
-          <span className="text-xs font-semibold text-gray-500 bg-gray-800/50 px-2 py-0.5 rounded-full border border-gray-700">
+          <span className="text-xs font-semibold text-gray-500 bg-white/5 px-2 py-0.5 rounded-full border border-white/10">
             {column.tasks.length}
           </span>
         </div>
@@ -73,7 +76,7 @@ export function KanBanColumn({ column, onAddTask, onEditTask }: KanBanColumnProp
           <div className="space-y-3">
             {column.tasks.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 text-center">
-                <div className="w-12 h-12 rounded-full bg-gray-800 flex items-center justify-center mb-3">
+                <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mb-3 border border-white/10">
                   <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                   </svg>
@@ -102,10 +105,13 @@ export function KanBanColumn({ column, onAddTask, onEditTask }: KanBanColumnProp
             className="
               w-full py-3 px-4
               flex items-center justify-center gap-2
-              bg-white hover:bg-gray-50
-              text-sm font-medium text-gray-600 hover:text-gray-800
-              rounded-xl border border-dashed border-gray-300 hover:border-gray-400
-              transition-all duration-200
+              bg-gradient-to-r from-orange-500/20 to-red-500/20
+              hover:from-orange-500/30 hover:to-red-500/30
+              text-sm font-medium text-orange-300
+              rounded-xl border border-orange-500/30
+              hover:border-orange-500/50
+              transition-all duration-300
+              hover:shadow-lg hover:shadow-orange-500/20
               active:scale-[0.98]
             "
           >

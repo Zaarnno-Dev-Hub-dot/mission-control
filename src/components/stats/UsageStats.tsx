@@ -48,7 +48,7 @@ export function UsageStats() {
     return (
       <div className="flex items-center justify-center h-32">
         <div className="flex items-center gap-2 text-gray-500">
-          <div className="w-4 h-4 border-2 border-gray-600 border-t-gray-400 rounded-full animate-spin" />
+          <div className="w-4 h-4 border-2 border-gray-600 border-t-orange-500 rounded-full animate-spin" />
           <span className="text-sm">Loading stats...</span>
         </div>
       </div>
@@ -59,12 +59,12 @@ export function UsageStats() {
     return (
       <div className="space-y-4">
         <div className="grid grid-cols-3 gap-3">
-          <StatCard label="Today's Calls" value="--" />
-          <StatCard label="Today's Tokens" value="--" />
-          <StatCard label="Est. Cost" value="--" />
+          <StatCard label="Calls" value="--" />
+          <StatCard label="Tokens" value="--" />
+          <StatCard label="Cost" value="--" accent />
         </div>
         <p className="text-gray-500 text-sm text-center py-4">
-          No usage data yet. Stats will appear here once sessions are tracked.
+          No usage data yet.
         </p>
       </div>
     );
@@ -92,7 +92,10 @@ export function UsageStats() {
       </div>
 
       {/* 7-Day Chart */}
-      <div className="bg-[#0a0a0f] rounded-xl p-4 border border-gray-800">
+      <div 
+        className="rounded-xl p-4 border border-white/10"
+        style={{ background: 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)' }}
+      >
         <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
           Last 7 Days
         </h4>
@@ -102,9 +105,9 @@ export function UsageStats() {
               <span className="text-xs text-gray-500 w-12">
                 {new Date(date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
               </span>
-              <div className="flex-1 h-2 bg-gray-800 rounded-full overflow-hidden">
+              <div className="flex-1 h-1.5 bg-white/10 rounded-full overflow-hidden">
                 <div 
-                  className="h-full bg-emerald-500 rounded-full transition-all"
+                  className="h-full bg-gradient-to-r from-orange-500 to-red-500 rounded-full transition-all"
                   style={{ width: `${(stats.calls / maxCalls) * 100}%` }}
                 />
               </div>
@@ -119,7 +122,7 @@ export function UsageStats() {
       {/* Totals */}
       <div className="flex justify-between text-xs text-gray-600 pt-2">
         <span>Total: {formatNumber(data.totalEntries)} sessions</span>
-        <span>Updated {new Date(data.lastUpdated).toLocaleTimeString()}</span>
+        <span>{new Date(data.lastUpdated).toLocaleTimeString()}</span>
       </div>
     </div>
   );
@@ -135,12 +138,19 @@ function StatCard({
   accent?: boolean;
 }) {
   return (
-    <div className={`rounded-xl p-3 text-center border ${
-      accent 
-        ? "bg-emerald-500/10 border-emerald-500/20" 
-        : "bg-gray-800/50 border-gray-700"
-    }`}>
-      <div className={`text-lg font-bold ${accent ? "text-emerald-400" : "text-gray-200"}`}>
+    <div 
+      className={`rounded-xl p-3 text-center border transition-all duration-300 ${
+        accent 
+          ? "border-orange-500/30 hover:border-orange-500/50" 
+          : "border-white/10 hover:border-white/20"
+      }`}
+      style={{ 
+        background: accent 
+          ? 'linear-gradient(135deg, rgba(255, 107, 53, 0.1) 0%, rgba(255, 107, 53, 0.05) 100%)' 
+          : 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)' 
+      }}
+    >
+      <div className={`text-lg font-bold ${accent ? "text-orange-400" : "text-gray-200"}`}>
         {value}
       </div>
       <div className="text-[10px] text-gray-500 uppercase tracking-wide mt-0.5">{label}</div>
