@@ -61,6 +61,21 @@
       "title": "🎯 Priority",
       "tasks": [
         {
+          "id": "task-blue-dragon-review",
+          "title": "Review Dragon UI Mockup - Provide Fresh Perspective",
+          "description": "Red has been trying to implement the dragon-themed glassmorphism UI but we're stuck. Need fresh eyes on:\n\n1. Current code review (see GitHub)\n2. Red's implementation notes\n3. Latest dragon mockup screenshot (attached in Discord)\n\nUser wants site to match the mockup exactly - dark theme with dragon silhouette background, glassmorphism cards with purple/blue accents, clean modern UI.\n\nPlease review and suggest next steps for achieving the vision. What should we change? What's working? What's not?",
+          "assignee": "blue",
+          "priority": "high",
+          "tags": [
+            "ui",
+            "design",
+            "review",
+            "dragon-theme"
+          ],
+          "createdAt": "2026-02-18T17:55:00.000Z",
+          "updatedAt": "2026-02-18T17:55:00.000Z"
+        },
+        {
           "id": "task-1771423047488",
           "title": "New Task",
           "createdAt": "2026-02-18T13:57:27.488Z",
