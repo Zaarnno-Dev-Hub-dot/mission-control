@@ -14,53 +14,60 @@ import { arrayMove } from "@dnd-kit/sortable";
 import { KanBanColumn } from "./KanBanColumn";
 import { KanBanCard } from "./KanBanCard";
 import { TaskModal } from "./TaskModal";
-import type { Task, Column, BoardData } from "@/types/kanban";
+import type { Task, Column, ColumnId } from "@/types/kanban";
+
+const COLUMNS: { id: ColumnId; title: string }[] = [
+  { id: "dragon-backlog", title: "🐉 Dragon Backlog" },
+  { id: "to-do", title: "📋 To Do" },
+  { id: "in-progress", title: "⚡ In Progress" },
+  { id: "review", title: "👀 Review" },
+  { id: "deployed", title: "🚀 Deployed" },
+];
 
 export function KanBanBoard() {
-  const [boardData, setBoardData] = useState<BoardData | null>(null);
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [saveStatus, setSaveStatus] = useState<"saved" | "saving" | "error">("saved");
 
-  // Load board data on mount
+  // Load tasks on mount
   useEffect(() => {
-    fetchBoard();
+    fetchTasks();
   }, []);
 
-  // Auto-save when board changes
+  // Auto-save when tasks change
   useEffect(() => {
-    if (boardData && !isLoading) {
+    if (!isLoading && tasks.length > 0) {
       const timeout = setTimeout(() => {
-        saveBoard();
+        saveTasks();
       }, 500);
       return () => clearTimeout(timeout);
     }
-  }, [boardData, isLoading]);
+  }, [tasks, isLoading]);
 
-  const fetchBoard = async () => {
+  const fetchTasks = async () => {
     try {
-      const res = await fetch("/api/kanban");
+      const res = await fetch("/api/tasks");
       if (res.ok) {
         const data = await res.json();
-        setBoardData(data);
+        setTasks(data);
       }
     } catch (error) {
-      console.error("Failed to load board:", error);
+      console.error("Failed to load tasks:", error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const saveBoard = async () => {
-    if (!boardData) return;
+  const saveTasks = async () => {
     setSaveStatus("saving");
     try {
-      const res = await fetch("/api/kanban", {
+      const res = await fetch("/api/tasks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(boardData),
+        body: JSON.stringify(tasks),
       });
       if (res.ok) {
         setSaveStatus("saved");
@@ -68,22 +75,20 @@ export function KanBanBoard() {
         setSaveStatus("error");
       }
     } catch (error) {
-      console.error("Failed to save board:", error);
+      console.error("Failed to save tasks:", error);
       setSaveStatus("error");
     }
   };
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
-      activationConstraint: {
-        distance: 5,
-      },
+      activationConstraint: { distance: 5 },
     })
   );
 
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
-    const task = findTask(active.id as string);
+    const task = tasks.find((t) => t.id === active.id);
     if (task) setActiveTask(task);
   };
 
@@ -96,78 +101,42 @@ export function KanBanBoard() {
     const activeId = active.id as string;
     const overId = over.id as string;
 
-    const sourceColumn = findColumnByTaskId(activeId);
-    const destColumn = boardData?.columns.find(
-      (col) => col.id === overId || col.tasks.some((t) => t.id === overId)
-    );
+    // Check if dropped on a column
+    const columnIds = COLUMNS.map((c) => c.id);
+    if (columnIds.includes(overId as ColumnId)) {
+      // Move to column
+      setTasks((prev) =>
+        prev.map((t) =>
+          t.id === activeId ? { ...t, column: overId as ColumnId } : t
+        )
+      );
+      return;
+    }
 
-    if (!sourceColumn || !destColumn) return;
-
-    if (sourceColumn.id === destColumn.id) {
-      const taskIndex = sourceColumn.tasks.findIndex((t) => t.id === activeId);
-      const overIndex = sourceColumn.tasks.findIndex((t) => t.id === overId);
-
-      if (taskIndex !== overIndex) {
-        const newTasks = arrayMove(sourceColumn.tasks, taskIndex, overIndex);
-        updateColumnTasks(sourceColumn.id, newTasks);
-      }
-    } else {
-      const task = sourceColumn.tasks.find((t) => t.id === activeId);
-      if (task) {
-        const newSourceTasks = sourceColumn.tasks.filter((t) => t.id !== activeId);
-        const newDestTasks = [...destColumn.tasks, { ...task, updatedAt: new Date().toISOString() }];
-        updateColumnTasks(sourceColumn.id, newSourceTasks);
-        updateColumnTasks(destColumn.id, newDestTasks);
+    // Check if dropped on another task
+    const overTask = tasks.find((t) => t.id === overId);
+    if (overTask) {
+      const activeTaskData = tasks.find((t) => t.id === activeId);
+      if (activeTaskData && activeTaskData.column !== overTask.column) {
+        setTasks((prev) =>
+          prev.map((t) =>
+            t.id === activeId ? { ...t, column: overTask.column } : t
+          )
+        );
       }
     }
   };
 
-  const findTask = (taskId: string): Task | undefined => {
-    if (!boardData) return;
-    for (const column of boardData.columns) {
-      const task = column.tasks.find((t) => t.id === taskId);
-      if (task) return task;
-    }
-  };
-
-  const findColumnByTaskId = (taskId: string): Column | undefined => {
-    if (!boardData) return;
-    return boardData.columns.find((col) => col.tasks.some((t) => t.id === taskId));
-  };
-
-  const updateColumnTasks = (columnId: string, tasks: Task[]) => {
-    setBoardData((prev) => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        columns: prev.columns.map((col) =>
-          col.id === columnId ? { ...col, tasks } : col
-        ),
-        lastUpdated: new Date().toISOString(),
-      };
-    });
-  };
-
-  const handleAddTask = (columnId: string) => {
+  const handleAddTask = () => {
     const newTask: Task = {
       id: `task-${Date.now()}`,
       title: "New Task",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      column: "dragon-backlog",
+      date: new Date().toISOString().split("T")[0],
+      progress: 0,
     };
 
-    setBoardData((prev) => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        columns: prev.columns.map((col) =>
-          col.id === columnId ? { ...col, tasks: [...col.tasks, newTask] } : col
-        ),
-        lastUpdated: new Date().toISOString(),
-      };
-    });
-
-    // Open modal for the new task
+    setTasks((prev) => [...prev, newTask]);
     setSelectedTask(newTask);
     setIsModalOpen(true);
   };
@@ -178,38 +147,20 @@ export function KanBanBoard() {
   };
 
   const handleSaveTask = (updatedTask: Task) => {
-    setBoardData((prev) => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        columns: prev.columns.map((col) => ({
-          ...col,
-          tasks: col.tasks.map((t) => (t.id === updatedTask.id ? updatedTask : t)),
-        })),
-        lastUpdated: new Date().toISOString(),
-      };
-    });
+    setTasks((prev) =>
+      prev.map((t) => (t.id === updatedTask.id ? updatedTask : t))
+    );
   };
 
   const handleDeleteTask = (taskId: string) => {
-    setBoardData((prev) => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        columns: prev.columns.map((col) => ({
-          ...col,
-          tasks: col.tasks.filter((t) => t.id !== taskId),
-        })),
-        lastUpdated: new Date().toISOString(),
-      };
-    });
+    setTasks((prev) => prev.filter((t) => t.id !== taskId));
   };
 
-  if (isLoading || !boardData) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="flex items-center gap-3 text-dragon-400">
-          <div className="w-5 h-5 border-2 border-dragon-400 border-t-transparent rounded-full animate-spin" />
+        <div className="flex items-center gap-3 text-gray-400">
+          <div className="w-5 h-5 border-2 border-gray-600 border-t-purple-500 rounded-full animate-spin" />
           <span className="text-sm font-medium">Loading board...</span>
         </div>
       </div>
@@ -244,23 +195,19 @@ export function KanBanBoard() {
             </span>
           )}
         </span>
-        <span className="text-xs text-dragon-600">
-          {boardData.columns.reduce((acc, col) => acc + col.tasks.length, 0)} tasks
-        </span>
+        <span className="text-xs text-gray-600">{tasks.length} tasks</span>
       </div>
 
       {/* Board */}
-      <DndContext
-        sensors={sensors}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
-      >
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {boardData.columns.map((column) => (
+      <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+          {COLUMNS.map((column) => (
             <KanBanColumn
               key={column.id}
-              column={column}
-              onAddTask={() => handleAddTask(column.id)}
+              id={column.id}
+              title={column.title}
+              tasks={tasks.filter((t) => t.column === column.id)}
+              onAddTask={handleAddTask}
               onEditTask={handleEditTask}
             />
           ))}

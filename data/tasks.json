@@ -1,0 +1,47 @@
+[
+  {
+    "id": "task-1",
+    "title": "Scaffold Next.js MC",
+    "desc": "App/TS/Tailwind dnd-kit",
+    "assignee": "red",
+    "date": "2026-02-18",
+    "column": "deployed",
+    "progress": 100
+  },
+  {
+    "id": "task-2",
+    "title": "UI Review & Plan",
+    "desc": "Match dragon mockup",
+    "assignee": "blue",
+    "date": "2026-02-18",
+    "column": "review",
+    "progress": 100
+  },
+  {
+    "id": "task-3",
+    "title": "NavBar tabs",
+    "desc": "Overview | Kanban toggle",
+    "assignee": "red",
+    "date": "2026-02-19",
+    "column": "to-do",
+    "progress": 0
+  },
+  {
+    "id": "task-4",
+    "title": "Dragon stats panels",
+    "desc": "Red left/Blue right",
+    "assignee": "red",
+    "date": "2026-02-19",
+    "column": "in-progress",
+    "progress": 50
+  },
+  {
+    "id": "task-5",
+    "title": "Kanban drag/drop",
+    "desc": "5 cols + edit modal",
+    "assignee": "red",
+    "date": "2026-02-19",
+    "column": "dragon-backlog",
+    "progress": 0
+  }
+]

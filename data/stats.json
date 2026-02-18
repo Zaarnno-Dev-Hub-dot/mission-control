@@ -1,0 +1,5 @@
+{
+  "red": {"missions":47,"power":99.9,"health":99,"active":true},
+  "blue": {"missions":52,"power":99,"health":99.9,"active":true},
+  "system": {"health":99.9}
+}
